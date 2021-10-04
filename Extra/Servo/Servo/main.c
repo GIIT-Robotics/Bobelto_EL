@@ -21,15 +21,25 @@ int main(void)
 	PWM_init(100);	// Encendemos el PWM con una freq de 50 Hz (20 ms)
 	sei();
 	
-	
+	//PWM_setDutyA(15);
+	//PWM_on();
 	
     while (1) 
     {
-		PWM_setDutyA(15);
-		PWM_on();
+		for(int i=10;i<20;i++)
+		{
+			PWM_setDutyA(i);
+			PWM_on();
+			_delay_ms(100);
+		}
 		
-		_delay_ms(1000);
-		
+		for(int i=20;i>10;i--)
+		{
+			PWM_setDutyA(i);
+			PWM_on();
+			_delay_ms(100);
+		}
+		/*
 		PWM_setDutyA(10);
 		PWM_on();
 		
@@ -43,7 +53,7 @@ int main(void)
 		PWM_setDutyA(20);
 		PWM_on();
 		
-		_delay_ms(1000);
+		_delay_ms(1000);*/
     }
 }
 
