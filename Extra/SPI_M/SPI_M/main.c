@@ -10,6 +10,8 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
+#include "UART/UART.h"
+
 uint8_t datoRecibido = 0x00;
 uint8_t pinesB = 0x00;
 
@@ -19,8 +21,8 @@ void SPI_init()		//- Inicializa SPI como Master
 	DDRB &=~ (1<<DDB4);                 	// PB4 es MISO
 	
 	// Esclavos
-	DDRB |= (1<<DDB2);                  	// PB2 será SS
-	PORTB |= (1<<PORTB2);               	// En alta significa que está desactivado
+	DDRB |= (1<<DDB1)|(1<<DDB2);                  	// PB2, PB1 será SS
+	PORTB |= (1<<PORTB1)|(1<<PORTB2);               // En alta significa que está desactivado
 	
 	// Orden de los datos
 	SPCR &=~ (1<<DORD);                 	// Primero el MSB
@@ -46,7 +48,7 @@ void SPI_slaveON(uint8_t slave)
 	switch (slave)
 	{
 		case 1:
-			PORTB &=~ (1<<PORTB2);
+			PORTB &=~ (1<<PORTB1);
 		break;
 		
 		case 2:
@@ -60,11 +62,11 @@ void SPI_slaveOFF(uint8_t slave)
 	switch (slave)
 	{
 		case 1:
-		PORTB &=~ (1<<PORTB2);
+			PORTB &=~ (1<<PORTB1);
 		break;
 		
 		case 2:
-		PORTB &=~ (1<<PORTB2);
+			PORTB &=~ (1<<PORTB2);
 		break;
 	}
 }
@@ -88,14 +90,22 @@ uint8_t SPI_rx()
 int main(void)
 {
 	SPI_init();
+	UART_init();
 
 	_delay_ms(10);
 	
     while (1) 
     {
-		SPI_slaveON(1);
-		SPI_tx(0x0F);
-		SPI_slaveOFF(1);
+		SPI_slaveON(2);
+		SPI_tx(15);
+		datoRecibido = SPI_rx();
+		SPI_slaveOFF(2);
+		
+		
+		UART_write_txt("DATO SPI recibe M: ");
+		UART_write_data(datoRecibido);
+		UART_write('\n');
+		
 		_delay_ms(100);
     }
 }
