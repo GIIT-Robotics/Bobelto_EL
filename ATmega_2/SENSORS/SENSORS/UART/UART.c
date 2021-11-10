@@ -1,12 +1,4 @@
-
-
-void UART_init();							//función para iniciar el USART AVR asíncrono, 8 bits, 9600 baudios,
-unsigned char UART_read();					//función para la recepción de caracteres
-void UART_write(unsigned char);				//función para la transmisión de caracteres
-void UART_msg(char*);						//función para la transmisión de cadenas de caracteres
-void UART_write_float(float);
-void UART_write_uint(uint32_t);
-void UART_write_int(int64_t);
+#include "UART.h"
 
 void UART_init()
 {
@@ -35,12 +27,12 @@ void UART_write_txt(char* cadena){			//cadena de caracteres de tipo char
 	while(*cadena !=0x00){				//mientras el último valor de la cadena sea diferente a el caracter nulo
 		UART_write(*cadena);			//transmite los caracteres de cadena
 		cadena++;						//incrementa la ubicación de los caracteres en cadena
-										//para enviar el siguiente caracter de cadena
+		//para enviar el siguiente caracter de cadena
 	}
 }
 
 void UART_write_float(float dato){
-	int16_t data =  (int16_t)dato;
+	int16_t data = (int16_t)dato;
 	uint8_t cantidad = 0;
 	bool signo = true; //true => '+' / false => '-'/
 	uint8_t numeros[10];
@@ -57,12 +49,12 @@ void UART_write_float(float dato){
 			numeros[i] =  data%(10) ;
 			data = data/(10);
 			
-		}else{
+			}else{
 			if (data!=0){
 				cantidad++;
-				numeros[i] = data;				
+				numeros[i] = data;
 			}
-			break;			
+			break;
 		}
 	}
 	
@@ -82,7 +74,7 @@ void UART_write_float(float dato){
 	for (int i = 0; i < 2; i++){
 		dato = dato*10;
 		UART_write(dato+48);
-		dato = dato - (int8_t)dato;		
+		dato = dato - (int8_t)dato;
 	}
 	UART_write_txt("\n\r");
 }
@@ -112,25 +104,25 @@ void UART_write_uint(uint32_t data){
 	
 	for (int i =1; i<cantidad+1; i++){
 		UART_write(numeros[cantidad-i] + 48);
-		}
+	}
 	UART_write_txt("\n\r");
 }
 void UART_write_int(int64_t data){
 	uint8_t cantidad = 0;
 	bool signo = true; //true => '+' / false => '-'/
 	uint8_t numeros[13];
-		
+	
 	if (data<0){
 		signo = false;
 		data = data*-1;
 	}
-		
+	
 	for(int i=0; i<11; i++){
 		if ( data/10 > 0 ){
 			cantidad++;
 			numeros[i] =  data%(10) ;
 			data = data/(10);
-				
+			
 			}else{
 			if (data!=0){
 				cantidad++;
@@ -139,7 +131,7 @@ void UART_write_int(int64_t data){
 			break;
 		}
 	}
-		
+	
 	if(signo==false){
 		UART_write(45);
 	}
@@ -147,7 +139,7 @@ void UART_write_int(int64_t data){
 		cantidad++;
 		numeros[0] = 0;
 	}
-		
+	
 	for (int i =1; i<cantidad+1; i++){
 		UART_write(numeros[cantidad-i] + 48);
 	}

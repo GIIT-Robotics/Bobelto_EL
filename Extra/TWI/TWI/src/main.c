@@ -7,6 +7,7 @@
 #include <math.h>
 #include "TWI/TWI.h"
 #include "mpu6050_reg.h"
+#include "bmp280_reg.h"
 #include "UART.h"
 
 //Ratios de conversion
@@ -16,7 +17,7 @@
 //Conversion de radianes a grados 180/PI
 #define RAD_TO_DEG 57.295779
 
-//Valores RAW
+//Valores MPU6050
 int16_t AcX, AcY, AcZ, GyX, GyY, GyZ;
 
 //Angulos
@@ -24,10 +25,19 @@ float Acc[2];
 float Gy[3];
 float Angle[3];
 
-//Variables temporales
+//Valores BMP280
+int32_t  Temperatura, Presion;
+uint16_t T1, P1;
+int16_t  T2, T3, P2, P3, P4, P5, P6, P7, P8, P9;
+int32_t  t_fine;
+int64_t var1, var2, T;
+
+
+//Variables temporales 
 int8_t currentSeg = 0;
 float dt = 0;
-uint8_t tmp[12];
+uint8_t tmp[2]; //ACELEROMETRO
+uint8_t prs[3]; //PRESION
 
 void TWI_write_sensor(uint16_t Address, uint16_t reg, uint8_t val){
 	while(TWI_startCond());
@@ -36,7 +46,7 @@ void TWI_write_sensor(uint16_t Address, uint16_t reg, uint8_t val){
 	while(TWI_write(val));
 	TWI_stopCond();
 }
-int8_t TWI_read_sensor(uint16_t Address, uint16_t reg){
+uint8_t TWI_read_sensor(uint16_t Address, uint16_t reg){
 	while(TWI_startCond());
 	while(TWI_sendAdrr(Address, TWI_W));
 	while(TWI_write(reg));
@@ -46,6 +56,7 @@ int8_t TWI_read_sensor(uint16_t Address, uint16_t reg){
 	TWI_stopCond();
 	return(currentSeg);
 }
+
 void mpu6050_init(uint16_t Address){
 	//	TWI_write_sensor( Address, reg, val);
 	TWI_write_sensor( Address, 0x6B, 0x00); //Sacar del sleep mode
@@ -55,32 +66,76 @@ void mpu6050_init(uint16_t Address){
 	TWI_write_sensor( Address, 0x38, 0x00);
 	TWI_write_sensor( Address, 0x68, 0x07);
 }
+void bmp280_init(uint16_t Address){
+	TWI_write_sensor( Address, 0xE0, 0xB6); //RESET
+	
+	// MODO: NAVIGATION INDOOR
+	TWI_write_sensor( Address, 0xF4, 0x57); //NORMAL MODE [_Tx2(0),_Tx2(1),_Tx2(0),_Px16(1),_Px16(0),_Px16(1),_MODE(1),_MODE(1)] 
+	TWI_write_sensor( Address, 0xF5, 0x10); //CONFIGURATION	
+	//TWI_write_sensor( Address, 0xF4, 0x01); 
+	DDRB |= (1<<DDB5);
+}
+
 void mpu6050_read_Acc(void){
 	tmp[0] = TWI_read_sensor(MPU6050_ADDRESS, 0x3B);
 	tmp[1] = TWI_read_sensor(MPU6050_ADDRESS, 0x3C);
-	AcX = (tmp[0]<<8)|(tmp[1]);
+	AcX = (int16_t)(tmp[0]<<8)|(tmp[1]);
 	
-	tmp[2] = TWI_read_sensor(MPU6050_ADDRESS, 0x3D);
-	tmp[3] = TWI_read_sensor(MPU6050_ADDRESS, 0x3E);
-	AcY = (tmp[2]<<8)|(tmp[3]);
+	tmp[0] = TWI_read_sensor(MPU6050_ADDRESS, 0x3D);
+	tmp[1] = TWI_read_sensor(MPU6050_ADDRESS, 0x3E);
+	AcY = (int16_t)(tmp[0]<<8)|(tmp[1]);
 	
-	tmp[4] = TWI_read_sensor(MPU6050_ADDRESS, 0x3F);
-	tmp[5] = TWI_read_sensor(MPU6050_ADDRESS, 0x40);
-	AcZ = (tmp[4]<<8)|(tmp[5]);
+	tmp[0] = TWI_read_sensor(MPU6050_ADDRESS, 0x3F);
+	tmp[1] = TWI_read_sensor(MPU6050_ADDRESS, 0x40);
+	AcZ = (int16_t)(tmp[0]<<8)|(tmp[1]);
 }
 void mpu6050_read_Gyr(void){
-	tmp[6] = TWI_read_sensor(MPU6050_ADDRESS, 0x43);
-	tmp[7] = TWI_read_sensor(MPU6050_ADDRESS, 0x44);
-	GyX = (tmp[6]<<8)|(tmp[7]);
+	tmp[0] = TWI_read_sensor(MPU6050_ADDRESS, 0x43);
+	tmp[1] = TWI_read_sensor(MPU6050_ADDRESS, 0x44);
+	GyX = (int16_t)(tmp[0]<<8)|(tmp[1]);
 	
-	tmp[8] = TWI_read_sensor(MPU6050_ADDRESS, 0x45);
-	tmp[9] = TWI_read_sensor(MPU6050_ADDRESS, 0x46);
-	GyY = (tmp[8]<<8)|(tmp[9]);
+	tmp[0] = TWI_read_sensor(MPU6050_ADDRESS, 0x45);
+	tmp[1] = TWI_read_sensor(MPU6050_ADDRESS, 0x46);
+	GyY = (int16_t)(tmp[0]<<8)|(tmp[1]);
 	
-	tmp[10] = TWI_read_sensor(MPU6050_ADDRESS, 0x47);
-	tmp[11] = TWI_read_sensor(MPU6050_ADDRESS, 0x48);
-	GyZ = (tmp[10]<<8)|(tmp[11]);
+	tmp[0] = TWI_read_sensor(MPU6050_ADDRESS, 0x47);
+	tmp[1] = TWI_read_sensor(MPU6050_ADDRESS, 0x48);
+	GyZ = (int16_t)(tmp[0]<<8)|(tmp[1]);
 }
+
+int32_t bmp280_read_Temp(void){
+	prs[0] = TWI_read_sensor(BMP280_ADDRESS, 0xFA);		
+	prs[1] = TWI_read_sensor(BMP280_ADDRESS, 0xFB);	
+	prs[2] = TWI_read_sensor(BMP280_ADDRESS, 0xFC);
+	return ((uint32_t) prs[0]<<16)|((uint32_t) prs[1]<<8)|((uint32_t) prs[2]);
+}
+int32_t bmp280_read_Prs(void){
+	prs[0] = TWI_read_sensor(BMP280_ADDRESS, 0xF7);
+	prs[1] = TWI_read_sensor(BMP280_ADDRESS, 0xF8);
+	prs[2] = TWI_read_sensor(BMP280_ADDRESS, 0xF9);
+	return ((uint32_t) prs[0]<<16)|((uint32_t) prs[1]<<8)|((uint32_t) prs[2]);
+}
+uint16_t bmp280_read_parameters(uint16_t reg){
+	tmp[0] = TWI_read_sensor(BMP280_ADDRESS, reg);
+	tmp[1] = TWI_read_sensor(BMP280_ADDRESS, reg+1);
+	return (uint16_t)(tmp[1]<<8)|(tmp[0]);
+}
+void Parameters(void){
+	T1 = (uint16_t)bmp280_read_parameters(0x88);
+	T2 = (int16_t) bmp280_read_parameters(0x8A);
+	T3 = (int16_t) bmp280_read_parameters(0x8C);
+
+	P1 = (uint16_t)bmp280_read_parameters(0x8E);
+	P2 = (int16_t) bmp280_read_parameters(0x90);
+	P3 = (int16_t) bmp280_read_parameters(0x92);
+	P4 = (int16_t) bmp280_read_parameters(0x94);
+	P5 = (int16_t) bmp280_read_parameters(0x96);
+	P6 = (int16_t) bmp280_read_parameters(0x98);
+	P7 = (int16_t) bmp280_read_parameters(0x9A);
+	P8 = (int16_t) bmp280_read_parameters(0x9C);
+	P9 = (int16_t) bmp280_read_parameters(0x9E);
+}
+
 void timer_Init()
 {
 	// Configure Timer 1
@@ -106,46 +161,59 @@ float Read_TIMER1( void )
 	return i*0.000064;
 }
 	
+	//FALTA APAGAR LOS SENSORES
+	
 int main(void)
 {
 	cli();
     TWI_Init();
 	UART_init();
-	timer_Init();
-	mpu6050_init(MPU6050_ADDRESS);
-	sei();
-	DDRB |= (1<<DDB5);
+	//timer_Init();
+	//mpu6050_init(MPU6050_ADDRESS);
+	bmp280_init(BMP280_ADDRESS);
+	sei();	
 	_delay_ms(10);	
 	//TIM16_ReadTCNT1();
 	
 	while (1){				
-		//PRENDIDO
-		//PORTB ^= (1<<PORTB5);	
-		mpu6050_read_Acc();
-		mpu6050_read_Gyr();		
-		Acc[1] = atan(-1*(AcX/A_R)/sqrt(pow((AcY/A_R),2) + pow((AcZ/A_R),2)))*RAD_TO_DEG;
-		Acc[0] = atan((AcY/A_R)/sqrt(pow((AcX/A_R),2) + pow((AcZ/A_R),2)))*RAD_TO_DEG;
-		
-		//Calculo del angulo del Giroscopio
-		Gy[0] = GyX/G_R;
-		Gy[1] = GyY/G_R;
-		Gy[2] = GyZ/G_R;
+		_delay_ms(200);
+		Parameters();
 				
-		dt = Read_TIMER1();	
-		//Aplicar el Filtro Complementario
-		Angle[0] = 0.98 *(Angle[0]+Gy[0]*dt) + 0.02*Acc[0];
-		Angle[1] = 0.98 *(Angle[1]+Gy[1]*dt) + 0.02*Acc[1];
+		// TEMPERATURA //
+		Temperatura = (int32_t) bmp280_read_Temp();
+		Temperatura >>= 4;
+				
+		var1 = ((((Temperatura >> 3) - ((int32_t)T1 << 1))) * ((int32_t)T2)) >> 11;
+		var2 = (((((Temperatura >> 4) - ((int32_t)T1)) * ((Temperatura >> 4) - ((int32_t)T1))) >> 12) * ((int32_t)T3)) >> 14;
+		t_fine = var1 + var2;
+		float T = (t_fine * 5 + 128) >> 8;
+		T = T/ 100;
 		
-		//Integración respecto del tiempo paras calcular el YAW
-		Angle[2] = Angle[2]+Gy[2]*dt;
-							
-		UART_write_txt("\n\rAngle 1: " );		
-		UART_write_data(Angle[0]);	
-		UART_write_txt("\n\rAngle 2: " );
-		UART_write_data(Angle[1]);
-		UART_write_txt("\n\rAngle 3: " );			
-		UART_write_data(Angle[2]);
-		_delay_ms(20);
+		UART_write_float(T);
+		
+		// PRESION //
+		Presion = (int32_t) bmp280_read_Prs();
+		Presion >>= 4;		
+		
+		var1 = ((int64_t)t_fine) - 128000;
+		var2 = var1 * var1 * (int64_t)P6;
+		var2 = var2 + ((var1 * (int64_t)P5) << 17);
+		var2 = var2 + (((int64_t)P4) << 35);
+		var1 = ((var1 * var1 * (int64_t)P3) >> 8) + ((var1 * (int64_t)P2) << 12);
+		var1 = (((((int64_t)1) << 47) + var1)) * ((int64_t)P1) >> 33;
+		
+		if (var1 == 0) {
+			return 0; // avoid exception caused by division by zero
+		}
+		
+		int64_t P = 1048576 - Presion;
+		P = (((P << 31) - (int64_t)var2) * 3125) / var1;		
+		var1 = (((int64_t)P9) * (P >> 13) * (P >> 13)) >> 25;
+		var2 = (((int64_t)P8) * P) >> 19;
+
+		P = ((P + var1 + var2) >> 8) + (((int64_t)P7) << 4);
+			
+		UART_write_float((float)P / 25600);
 	}
 }
 

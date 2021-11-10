@@ -147,6 +147,9 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="src\bmp280_reg.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\mpu6050_reg.h">
       <SubType>compile</SubType>
     </Compile>
