@@ -13,7 +13,6 @@ void USON_init()
 	
 	PORTD &=~ (1<<PORTD3);
 	
-	
 	//- Conf de Int por Echo
 	PCICR |= (1<<PCIE2);
 	PCMSK2 |= (1<<PCINT18);

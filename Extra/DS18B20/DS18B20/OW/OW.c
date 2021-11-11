@@ -4,13 +4,13 @@
 void OW_pinlow(int io)
 {
 	//- Establece el pin "io" en baja para salida
-	DDRD = DDRD | io;
+	DDRD = 1 << io;
 }
 
 void OW_pinrelease(int io)
 {
 	//- Establece el pin "io" en entrada
-	DDRD = DDRD & ~(io);
+	DDRD = 0 << io;
 }
 
 uint8_t OW_pinread(int io)
@@ -27,23 +27,23 @@ void TIM0_init()
 	TCCR1B = 0<<CS12 | 1<<CS11 | 1<<CS10;
 }
 
-void DelayMicros(int sec)
+void DelayMicros(int us)
 {
 	//- Contador en 0
 	TCNT1 = 0;
 	//- Reset de banderas
 	TIFR1 = 1<<OCF1A;
 	//- Establecemos límite de cuenta
-	OCR1A = (sec>>1) - 1;
+	OCR1A = (us>>1) - 1;
 	//- Loop mientras la bandera no se active
 	while ((TIFR1 & 1<<OCF1A) == 0);
 }
 
 void LowRelease(int low, int high)
 {
-	OW_pinlow(7);
+	OW_pinlow(2);
 	DelayMicros(low);
-	OW_pinrelease(7);
+	OW_pinrelease(2);
 	DelayMicros(high);
 }
 
@@ -51,7 +51,7 @@ uint8_t OW_reset()
 {
 	uint8_t data = 1;
 	LowRelease(480, 70);
-	data = OW_pinread(7);
+	data = OW_pinread(2);
 	DelayMicros(410);
 	//- Retorna 0 cuando se encuentra presente
 	return data;
@@ -104,4 +104,3 @@ void OW_work(int io)
 	//- Lo ponemos en baja
 	PORTD = PORTD & ~(io);	 
 }
-

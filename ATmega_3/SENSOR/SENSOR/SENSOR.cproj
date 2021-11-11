@@ -126,12 +126,6 @@
     <Compile Include="ADC\ADC.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="DS18B20\DS18B20.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="DS18B20\DS18B20.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="HK3022\HK3022.c">
       <SubType>compile</SubType>
     </Compile>
@@ -153,6 +147,12 @@
     <Compile Include="TIM\TIM.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="TWI\TWI.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TWI\TWI.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="UART\UART.c">
       <SubType>compile</SubType>
     </Compile>
@@ -170,7 +170,7 @@
     <Folder Include="ADC" />
     <Folder Include="LM335" />
     <Folder Include="HK3022" />
-    <Folder Include="DS18B20" />
+    <Folder Include="TWI" />
     <Folder Include="TIM" />
     <Folder Include="USON" />
     <Folder Include="UART" />
