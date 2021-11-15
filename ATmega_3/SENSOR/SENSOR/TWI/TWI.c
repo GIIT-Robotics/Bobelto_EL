@@ -5,7 +5,7 @@ void TWI_init()
 	//- F_TWI = F_CPU/(16+(2*TWBR*Preescaler))
 	
 	//- Preescalador = 1
-	TWSR = 0<<TWPS0 | 0<<TWPS1
+	TWSR = 0<<TWPS0 | 0<<TWPS1;
 	
 	//- TWBR
 	TWBR = 32;

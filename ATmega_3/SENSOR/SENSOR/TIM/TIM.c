@@ -1,9 +1,3 @@
-/*
- * TIM.c
- *
- * Created: 27/10/2021 17:08:06
- *  Author: Alessandro
- */ 
 #include "TIM.h"
 
 void TIM_init()

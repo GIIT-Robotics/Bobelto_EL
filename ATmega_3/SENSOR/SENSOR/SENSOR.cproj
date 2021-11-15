@@ -126,6 +126,12 @@
     <Compile Include="ADC\ADC.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="BMP280\BMP280.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="BMP280\BMP280.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="HK3022\HK3022.c">
       <SubType>compile</SubType>
     </Compile>
@@ -139,6 +145,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MPU6050\MPU6050.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MPU6050\MPU6050.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="TIM\TIM.c">
@@ -170,6 +182,8 @@
     <Folder Include="ADC" />
     <Folder Include="LM335" />
     <Folder Include="HK3022" />
+    <Folder Include="MPU6050" />
+    <Folder Include="BMP280" />
     <Folder Include="TWI" />
     <Folder Include="TIM" />
     <Folder Include="USON" />
