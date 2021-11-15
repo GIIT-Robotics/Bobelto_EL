@@ -97,6 +97,7 @@ void TWI_write_sensor(uint8_t Address, uint8_t reg, uint8_t val)
 	while(TWI_write(reg));
 	while(TWI_write(val));
 	TWI_stopCond();
+	//if(reg == 0xF5)	PORTB = 1<<PORTB5;
 }
 
 uint8_t TWI_read_sensor(uint8_t Address, uint8_t reg)
@@ -111,6 +112,7 @@ uint8_t TWI_read_sensor(uint8_t Address, uint8_t reg)
 	data = TWI_read(TWI_NACK);
 	TWI_stopCond();
 	
+	UART_write('.');
 	return data;
 }
 

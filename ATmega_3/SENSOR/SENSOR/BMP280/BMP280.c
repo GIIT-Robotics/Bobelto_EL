@@ -2,11 +2,22 @@
 
 void BMP280_init()
 {
+	UART_write_txt("BMP: RESET ON");
+	UART_write('\n');
+
 	TWI_write_sensor(BMP280_ADDRESS,0xE0,0XB6);		//- Reset
 	
+	UART_write_txt("BMP: NORMAL MODE");
+	UART_write('\n');
 	//- Modo de navegacion interior
 	TWI_write_sensor(BMP280_ADDRESS,0xF4,0x57);		//- Normal mode
+	
+	UART_write_txt("BMP: CONFIG");
+	UART_write('\n');
 	TWI_write_sensor(BMP280_ADDRESS,0xF5,0x10);		//- Config
+	
+	UART_write_txt("BMP: END INIT");
+	UART_write('\n');
 }
 
 uint16_t BMP280_params(uint8_t reg)
@@ -44,8 +55,8 @@ int32_t BMP280_t_fine()
 	T2 = (int16_t)BMP280_params(0x8A);
 	T3 = (int16_t)BMP280_params(0x8C);
 	
-	var1 = ((Temp>>3 - (int32_t)T1<<1) * (int32_t)T2) >> 11;
-	var2 = ((((Temp>>4 - (int32_t)T1) * (Temp>>4 - (int32_t)T1)) >> 12) * (int32_t)T3) >> 14;
+	var1 = (((Temp>>3) - ((int32_t)T1<<1)) * (int32_t)T2) >> 11;
+	var2 = (((((Temp>>4) - (int32_t)T1) * ((Temp>>4) - ((int32_t)T1)) >> 12)) * (int32_t)T3) >> 14;
 	T_fine = var1 + var2;
 	
 	return T_fine;	

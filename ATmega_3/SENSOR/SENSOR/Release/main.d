@@ -17,7 +17,10 @@ main.d main.o: .././main.c \
  e:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\interrupt.h \
  e:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stdbool.h \
  .././LM335/./../ADC/ADC.h .././UART/UART.h .././HK3022/HK3022.h \
- .././HK3022/./../ADC/ADC.h
+ .././HK3022/./../ADC/ADC.h .././TWI/TWI.h .././BMP280/BMP280.h \
+ .././BMP280/../TWI/TWI.h \
+ e:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\stdlib.h \
+ e:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stddef.h
 
 e:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h:
 
@@ -62,3 +65,13 @@ e:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\
 .././HK3022/HK3022.h:
 
 .././HK3022/./../ADC/ADC.h:
+
+.././TWI/TWI.h:
+
+.././BMP280/BMP280.h:
+
+.././BMP280/../TWI/TWI.h:
+
+e:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\stdlib.h:
+
+e:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stddef.h:

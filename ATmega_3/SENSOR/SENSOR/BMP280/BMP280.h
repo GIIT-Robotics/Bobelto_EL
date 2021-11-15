@@ -10,6 +10,7 @@
 #define BMP280_H_
 
 	#include "../TWI/TWI.h"
+	#include <stdlib.h>
 	#define BMP280_ADDRESS 0x76		//- BMP280 Address
 
 	void BMP280_init();
