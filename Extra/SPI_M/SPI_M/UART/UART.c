@@ -18,7 +18,7 @@ void UART_init()
 
 unsigned char UART_read(){
 	if(UCSR0A&(1<<7)){			//si el bit7 del registro UCSR0A se ha puesto a 1
-		return UDR0;			//devuelve el dato almacenado en el registro UDR0
+		return (uint8_t)UDR0;			//devuelve el dato almacenado en el registro UDR0
 	}
 	else
 	return 0;

@@ -18,8 +18,9 @@ void USON_init()
 	PCMSK2 |= (1<<PCINT18);
 }
 
+/*
 float USON_Data()
 {
 	
 	
-}
+}*/

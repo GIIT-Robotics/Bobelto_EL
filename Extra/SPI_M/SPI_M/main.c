@@ -96,6 +96,77 @@ int main(void)
 	
     while (1) 
     {
+		while(!(UCSR0A&(1<<7)));	
+		unsigned char RX_data = UART_read();
+		
+		UART_write(RX_data);
+		UART_write('\n');
+		
+		switch(RX_data)
+		{
+			case '0':
+				UART_write_txt("NONE.");
+				UART_write('\n');
+				SPI_slaveON(1);
+				SPI_tx(0x00);
+				datoRecibido = SPI_rx();
+				UART_write_data(datoRecibido);
+				UART_write('\n');
+				SPI_slaveOFF(1);
+				break;
+			
+			case '1':
+				UART_write_txt("Temperatura interna.");
+				UART_write('\n');
+				SPI_slaveON(1);
+				SPI_tx(0x01);
+				datoRecibido = SPI_rx();
+				UART_write_data(datoRecibido);
+				UART_write('\n');
+				SPI_slaveOFF(1);
+				break;
+			
+			
+			case '2':
+				UART_write_txt("Presión interna.");
+				UART_write('\n');
+				SPI_slaveON(1);
+				SPI_tx(0x02);
+				datoRecibido = SPI_rx();
+				UART_write_data(datoRecibido);
+				UART_write('\n');
+				SPI_slaveOFF(1);
+				break;
+			
+			case '3':
+				UART_write_txt("Accelerometer.");
+				UART_write('\n');
+				SPI_slaveON(1);
+				SPI_tx(0x02);
+				datoRecibido = SPI_rx();
+				UART_write_data(datoRecibido);
+				UART_write('\n');
+				SPI_slaveOFF(1);
+				break;
+			
+			case '4':
+				UART_write_txt("Gyroscope.");
+				UART_write('\n');
+				SPI_slaveON(1);
+				SPI_tx(0x02);
+				datoRecibido = SPI_rx();
+				UART_write_data(datoRecibido);
+				UART_write('\n');
+				SPI_slaveOFF(1);
+				break;	
+			
+			default:
+				UART_write_txt("Error.");
+				UART_write('\n');
+				break;
+		}
+		
+		/*
 		SPI_slaveON(2);
 		SPI_tx(15);
 		datoRecibido = SPI_rx();
@@ -105,6 +176,7 @@ int main(void)
 		UART_write_txt("DATO SPI recibe M: ");
 		UART_write_data(datoRecibido);
 		UART_write('\n');
+		*/
 		
 		_delay_ms(100);
     }

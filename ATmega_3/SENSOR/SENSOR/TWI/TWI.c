@@ -112,7 +112,8 @@ uint8_t TWI_read_sensor(uint8_t Address, uint8_t reg)
 	data = TWI_read(TWI_NACK);
 	TWI_stopCond();
 	
-	UART_write('.');
+	_delay_us(100);
+	
 	return data;
 }
 
