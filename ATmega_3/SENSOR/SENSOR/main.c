@@ -16,12 +16,26 @@
 #include "TWI/TWI.h"
 #include "BMP280/BMP280.h"
 #include "MPU6050/MPU6050.h"
+#include "USON/USON.h"
+
+uint16_t dist = 0;
+
+ISR(PCINT2_vect)
+{
+	if(PIND & (1<<PIND2))
+	{
+		TCNT1 = 0;
+	} else
+	{
+		uint16_t t = TCNT1;
+		cli();
+		dist = t * 0.03432 / 4;
+		sei();
+	}
+}
 
 int main(void)
 {
-	//-DDRB = 1<<DDB5;
-	//-PORTB = 0<<PORTB5;
-	
 	cli();
 	UART_write_txt("INIT UART");
 	UART_write('\n');
@@ -48,6 +62,11 @@ int main(void)
 	
 	MPU6050_init();
 	
+	UART_write_txt("INIT USON");
+	UART_write('\n');
+	
+	USON_init();
+	
 	UART_write_txt("10ms delay");
 	UART_write('\n');
 	_delay_ms(10);
@@ -55,10 +74,8 @@ int main(void)
 	
     while (1) 
     {
-		/*
 		float T_int = LM335_Data();
 		float P_ext = HK3022_Data();
-		
 		
 		UART_write_data(T_int);
 		UART_write_txt(" grad C");
@@ -66,7 +83,6 @@ int main(void)
 		UART_write_data(P_ext);
 		UART_write_txt(" bar");
 		UART_write('\n');
-		*/
 		
 		float p_int = BMP280_pres();
 		
@@ -102,6 +118,11 @@ int main(void)
 		UART_write_data(y);
 		UART_write_txt(" | Gyro Z: ");
 		UART_write_data(z);
+		UART_write('\n');
+		
+		USON_Data();
+		UART_write_data(dist);
+		UART_write_txt(" cm");
 		UART_write('\n');
 		
 		_delay_ms(500);

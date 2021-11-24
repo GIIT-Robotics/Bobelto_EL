@@ -16,7 +16,6 @@
 	#include <stdbool.h>
 
 	void USON_init();
-	float USON_Data();
-
-
+	void USON_Data();
+	
 #endif /* USON_H_ */
