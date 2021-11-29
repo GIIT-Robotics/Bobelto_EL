@@ -18,7 +18,7 @@
 int main(void)
 {
 	cli();
-	PWM_init(200);	// Encendemos el PWM con una freq de 50 Hz (20 ms)
+	PWM_init(200);	// Encendemos el PWM con una freq de 200 Hz (5 ms)
 	ADC_init();
 	UART_init();
 	sei();
