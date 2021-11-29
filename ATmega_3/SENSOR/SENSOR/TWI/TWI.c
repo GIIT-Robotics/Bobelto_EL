@@ -97,7 +97,8 @@ void TWI_write_sensor(uint8_t Address, uint8_t reg, uint8_t val)
 	while(TWI_write(reg));
 	while(TWI_write(val));
 	TWI_stopCond();
-	//if(reg == 0xF5)	PORTB = 1<<PORTB5;
+	
+	_delay_us(100);
 }
 
 uint8_t TWI_read_sensor(uint8_t Address, uint8_t reg)

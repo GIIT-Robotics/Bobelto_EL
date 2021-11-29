@@ -153,6 +153,12 @@
     <Compile Include="MPU6050\MPU6050.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="SPI\SPI.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="SPI\SPI.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="TIM\TIM.c">
       <SubType>compile</SubType>
     </Compile>
@@ -184,6 +190,7 @@
     <Folder Include="HK3022" />
     <Folder Include="MPU6050" />
     <Folder Include="BMP280" />
+    <Folder Include="SPI" />
     <Folder Include="TWI" />
     <Folder Include="TIM" />
     <Folder Include="USON" />

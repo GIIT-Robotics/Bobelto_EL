@@ -14,6 +14,16 @@
 
 uint8_t datoRecibido = 0x00;
 uint8_t pinesB = 0x00;
+uint8_t SPI_Rx = 0x00;
+unsigned char UART_Rx = 0x00;
+
+ISR(USART_RX_vect)
+{
+	UART_write_txt("DATO RECIBIDO: ");
+	UART_Rx = UART_read();
+	UART_write(UART_Rx);
+	UART_write('\n');
+}
 
 void SPI_init()		//- Inicializa SPI como Master
 {
@@ -41,6 +51,9 @@ void SPI_init()		//- Inicializa SPI como Master
 	
 	// Activar SPI
 	SPCR |= (1<<SPE);
+	
+	//Activar interrupcion SPI
+	//SPCR |= (1<<SPIE);
 }
 
 void SPI_slaveON(uint8_t slave)
@@ -89,96 +102,165 @@ uint8_t SPI_rx()
 
 int main(void)
 {
+	cli();
 	SPI_init();
 	UART_init();
+	sei();
 
 	_delay_ms(10);
 	
     while (1) 
     {
-		while(!(UCSR0A&(1<<7)));	
-		unsigned char RX_data = UART_read();
+		float F = 0.0;
+		uint32_t Buff = 0;
+		int16_t I16 = 0;
+		uint8_t temp[4];
 		
-		UART_write(RX_data);
-		UART_write('\n');
-		
-		switch(RX_data)
+		switch(UART_Rx)
 		{
 			case '0':
-				UART_write_txt("NONE.");
+				UART_write_txt("ENVIO PRUEBA");
 				UART_write('\n');
+				
 				SPI_slaveON(1);
-				SPI_tx(0x00);
-				datoRecibido = SPI_rx();
-				UART_write_data(datoRecibido);
-				UART_write('\n');
+
+				SPI_tx(0x01);
+				
+				temp[0] = SPI_rx();
+				temp[1] = SPI_rx();
+				
 				SPI_slaveOFF(1);
+				
+				//F = (int32_t)temp[0]<<8 | (int32_t)temp[1];
+				
+				UART_write_data(temp[0]);
+				UART_write('\n');
+				UART_write_data(temp[1]);
+				UART_write('\n');
+				
 				break;
 			
 			case '1':
-				UART_write_txt("Temperatura interna.");
+				UART_write_txt("Presion interna:");
 				UART_write('\n');
+				
 				SPI_slaveON(1);
+
 				SPI_tx(0x01);
-				datoRecibido = SPI_rx();
-				UART_write_data(datoRecibido);
+				
+				temp[0] = SPI_rx();
+				temp[1] = SPI_rx();
+				temp[2] = SPI_rx();
+				temp[3] = SPI_rx();
+				
+				F = (int32_t)temp[0]<<24 | (int32_t)temp[1]<<16 | (int32_t)temp[2]<<8 | (int32_t)temp[3];
+				
+				UART_write_data(F);
 				UART_write('\n');
+				
 				SPI_slaveOFF(1);
+				
 				break;
 			
 			
 			case '2':
-				UART_write_txt("Presión interna.");
+				UART_write_txt("Presión externa:");
 				UART_write('\n');
+				
 				SPI_slaveON(1);
+				
 				SPI_tx(0x02);
-				datoRecibido = SPI_rx();
-				UART_write_data(datoRecibido);
+				
+				//temp[0] = SPI_rx();
+				//temp[1] = SPI_rx();
+				//temp[2] = SPI_rx();
+				//temp[3] = SPI_rx();
+				//
+				//F = (int32_t)temp[0]<<24 | (int32_t)temp[1]<<16 | (int32_t)temp[2]<<8 | (int32_t)temp[3];
+				
+				temp[0] = SPI_rx();
+				
+				//UART_write_data(F);
+				UART_write_data(temp[0]);
 				UART_write('\n');
+				
 				SPI_slaveOFF(1);
+				
 				break;
 			
 			case '3':
-				UART_write_txt("Accelerometer.");
+				UART_write_txt("Temperatura interna:");
 				UART_write('\n');
+				
 				SPI_slaveON(1);
-				SPI_tx(0x02);
-				datoRecibido = SPI_rx();
-				UART_write_data(datoRecibido);
+				
+				SPI_tx(0x03);
+				
+				temp[0] = SPI_rx();
+				temp[1] = SPI_rx();
+				temp[2] = SPI_rx();
+				temp[3] = SPI_rx();
+				
+				F = (int32_t)temp[0]<<24 | (int32_t)temp[1]<<16 | (int32_t)temp[2]<<8 | (int32_t)temp[3];
+				
+				UART_write_data(F);
 				UART_write('\n');
+				
 				SPI_slaveOFF(1);
+				
 				break;
 			
 			case '4':
-				UART_write_txt("Gyroscope.");
+				UART_write_txt("Temperatura externa:");
 				UART_write('\n');
+				
 				SPI_slaveON(1);
+				
 				SPI_tx(0x02);
-				datoRecibido = SPI_rx();
-				UART_write_data(datoRecibido);
+				
+				temp[0] = SPI_rx();
+				temp[1] = SPI_rx();
+				temp[2] = SPI_rx();
+				temp[3] = SPI_rx();
+				
+				F = (int32_t)temp[0]<<24 | (int32_t)temp[1]<<16 | (int32_t)temp[2]<<8 | (int32_t)temp[3];
+				
+				UART_write_data(F);
 				UART_write('\n');
+				
 				SPI_slaveOFF(1);
+				
 				break;	
 			
 			default:
-				UART_write_txt("Error.");
-				UART_write('\n');
+				//UART_write_txt("Error.");
+				//UART_write('\n');
+				//UART_write('.');
+				
+				
+				//UART_write_txt("Presion interna:");
+				//UART_write('\n');
+				//
+				//SPI_slaveON(1);
+				//
+				//SPI_tx(0x01);
+				//
+				//temp[0] = SPI_rx();
+				//temp[1] = SPI_rx();
+				//temp[2] = SPI_rx();
+				//temp[3] = SPI_rx();
+				//
+				//F = (int32_t)temp[0]<<24 | (int32_t)temp[1]<<16 | (int32_t)temp[2]<<8 | (int32_t)temp[3];
+				//
+				//UART_write_data(F);
+				//UART_write('\n');
+				//
+				//SPI_slaveOFF(1);
+				
 				break;
 		}
 		
-		/*
-		SPI_slaveON(2);
-		SPI_tx(15);
-		datoRecibido = SPI_rx();
-		SPI_slaveOFF(2);
-		
-		
-		UART_write_txt("DATO SPI recibe M: ");
-		UART_write_data(datoRecibido);
-		UART_write('\n');
-		*/
-		
-		_delay_ms(100);
+		_delay_us(10);
     }
 }
 

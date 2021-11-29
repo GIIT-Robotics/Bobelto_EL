@@ -38,6 +38,7 @@ SUBDIRS :=  \
 ../HK3022 \
 ../MPU6050 \
 ../BMP280 \
+../SPI \
 ../TWI \
 ../TIM \
 ../USON \
@@ -52,6 +53,7 @@ C_SRCS +=  \
 ../LM335/LM335.c \
 ../main.c \
 ../MPU6050/MPU6050.c \
+../SPI/SPI.c \
 ../TIM/TIM.c \
 ../TWI/TWI.c \
 ../UART/UART.c \
@@ -71,6 +73,7 @@ HK3022/HK3022.o \
 LM335/LM335.o \
 main.o \
 MPU6050/MPU6050.o \
+SPI/SPI.o \
 TIM/TIM.o \
 TWI/TWI.o \
 UART/UART.o \
@@ -83,6 +86,7 @@ HK3022/HK3022.o \
 LM335/LM335.o \
 main.o \
 MPU6050/MPU6050.o \
+SPI/SPI.o \
 TIM/TIM.o \
 TWI/TWI.o \
 UART/UART.o \
@@ -95,6 +99,7 @@ HK3022/HK3022.d \
 LM335/LM335.d \
 main.d \
 MPU6050/MPU6050.d \
+SPI/SPI.d \
 TIM/TIM.d \
 TWI/TWI.d \
 UART/UART.d \
@@ -107,6 +112,7 @@ HK3022/HK3022.d \
 LM335/LM335.d \
 main.d \
 MPU6050/MPU6050.d \
+SPI/SPI.d \
 TIM/TIM.d \
 TWI/TWI.d \
 UART/UART.d \
@@ -162,6 +168,13 @@ LM335/LM335.o: ../LM335/LM335.c
 	
 
 MPU6050/MPU6050.o: ../MPU6050/MPU6050.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : 5.4.0
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DNDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -Wall -mmcu=atmega328p -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\gcc\dev\atmega328p" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+SPI/SPI.o: ../SPI/SPI.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DNDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -Wall -mmcu=atmega328p -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.6.364\gcc\dev\atmega328p" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

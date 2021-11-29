@@ -14,6 +14,8 @@ main.c
 
 MPU6050\MPU6050.c
 
+SPI\SPI.c
+
 TIM\TIM.c
 
 TWI\TWI.c

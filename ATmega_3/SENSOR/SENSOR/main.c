@@ -11,7 +11,7 @@
 
 #include "ADC/ADC.h"
 #include "LM335/LM335.h"
-#include "UART/UART.h"
+#include "SPI/SPI.h"
 #include "HK3022/HK3022.h"
 #include "TWI/TWI.h"
 #include "BMP280/BMP280.h"
@@ -19,6 +19,12 @@
 #include "USON/USON.h"
 
 uint16_t dist = 0;
+uint8_t SPI_Rx = 0;
+
+ISR(SPI_STC_vect)
+{
+	SPI_Rx = SPDR;
+}
 
 ISR(PCINT2_vect)
 {
@@ -37,94 +43,77 @@ ISR(PCINT2_vect)
 int main(void)
 {
 	cli();
-	UART_write_txt("INIT UART");
-	UART_write('\n');
-	
-	UART_init();
-	
-	UART_write_txt("INIT ADC");
-	UART_write('\n');
-	
-	ADC_init();
-	
-	UART_write_txt("INIT TWI");
-	UART_write('\n');
-	
-	TWI_init();
 
-	UART_write_txt("INIT BMP280");
-	UART_write('\n');
-	
+	SPI_init();
+	ADC_init();
+	TWI_init();
 	BMP280_init();
-	
-	UART_write_txt("INIT MPU6050");
-	UART_write('\n');
-	
 	MPU6050_init();
-	
-	UART_write_txt("INIT USON");
-	UART_write('\n');
-	
 	USON_init();
 	
-	UART_write_txt("10ms delay");
-	UART_write('\n');
 	_delay_ms(10);
+	
 	sei();
 	
     while (1) 
     {
-		float T_int = LM335_Data();
-		float P_ext = HK3022_Data();
+	    float T_ext = LM335_Data();				//- Temperatura externa
+	    float P_ext = HK3022_Data();			//- Presion externa
+	    float P_int = BMP280_pres();			//- Presion interna
+	    float T_int = BMP280_temp();			//- Temperatura interna
+	    int16_t a_x = MPU6050_read_acce(1);		//- Acelerometro en X
+	    int16_t a_y = MPU6050_read_acce(2);		//- Acelerometro en Y
+	    int16_t a_z = MPU6050_read_acce(3);		//- Acelerometro en Z
+	    int16_t g_x = MPU6050_read_gyro(1);		//- Giroscopio en X
+	    int16_t g_y = MPU6050_read_gyro(2);		//- Giroscopio en Y
+	    int16_t g_z = MPU6050_read_gyro(3);		//- Giroscopio en Z
+	    USON_Data();	//- La data se guarda en dist
 		
-		UART_write_data(T_int);
-		UART_write_txt(" grad C");
-		UART_write('\n');
-		UART_write_data(P_ext);
-		UART_write_txt(" bar");
-		UART_write('\n');
+		if (SPI_Rx == 0x01)
+		{
+			SPI_tx_32bit(P_int);
+		} 
+		else if (SPI_Rx == 0x02)
+		{
+			SPI_tx_32bit(P_ext);
+		} 
+		else if (SPI_Rx == 0x03)
+		{
+			SPI_tx_32bit(T_int);
+		} 
+		else if (SPI_Rx == 0x04)
+		{
+			SPI_tx_32bit(T_ext);
+		} 
+		else if (SPI_Rx == 0x05)
+		{
+			SPI_tx_16bit(g_x);
+		} 
+		else if (SPI_Rx == 0x06)
+		{
+			SPI_tx_16bit(g_y);
+		} 
+		else if (SPI_Rx == 0x07)
+		{
+			SPI_tx_16bit(g_z);
+		} 
+		else if (SPI_Rx == 0x08)
+		{
+			SPI_tx_16bit(a_x);
+		} 
+		else if (SPI_Rx == 0x09)
+		{
+			SPI_tx_16bit(a_y);
+		} 
+		else if (SPI_Rx == 0x0A)
+		{
+			SPI_tx_16bit(a_z);
+		} 
+		else if (SPI_Rx == 0x0B)
+		{
+			SPI_tx_16bit(dist);
+		}
 		
-		float p_int = BMP280_pres();
-		
-		UART_write_txt("Presion interna: ");
-		UART_write_data(p_int);
-		UART_write('\n');
-	
-		float t_int = BMP280_temp();
-		
-		UART_write_txt("Temperatura 1: ");
-		UART_write_data(t_int);
-		UART_write('\n');
-		
-		int16_t x = MPU6050_read_acce(1);
-		int16_t y = MPU6050_read_acce(2);
-		int16_t z = MPU6050_read_acce(3);
-		
-		UART_write_txt("Acc X: ");
-		UART_write_data(x);
-		UART_write_txt(" | Acc Y: ");
-		UART_write_data(y);
-		UART_write_txt(" | Acc Z: ");
-		UART_write_data(z);
-		UART_write('\n');
-		
-		x = MPU6050_read_gyro(1);
-		y = MPU6050_read_gyro(2);
-		z = MPU6050_read_gyro(3);
-		
-		UART_write_txt("Gyro X: ");
-		UART_write_data(x);
-		UART_write_txt(" | Gyro Y: ");
-		UART_write_data(y);
-		UART_write_txt(" | Gyro Z: ");
-		UART_write_data(z);
-		UART_write('\n');
-		
-		USON_Data();
-		UART_write_data(dist);
-		UART_write_txt(" cm");
-		UART_write('\n');
-		
-		_delay_ms(500);
+		_delay_us(10);
     }
 }

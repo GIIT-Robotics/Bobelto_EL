@@ -2,23 +2,11 @@
 
 void MPU6050_init()
 {
-	UART_write_txt("MPU: Primer init");
-	UART_write('\n');	
 	TWI_write_sensor(MPU6050_ADDRESS,0x6B,0x00);	//- Lo saca del sleep mode
-	UART_write_txt("MPU: Segundo init");
-	UART_write('\n');
 	TWI_write_sensor(MPU6050_ADDRESS,0x1A,0x01);
-	UART_write_txt("MPU: Tercer init");
-	UART_write('\n');
 	TWI_write_sensor(MPU6050_ADDRESS,0x1B,0x00);
-	UART_write_txt("MPU: Cuarto init");
-	UART_write('\n');
 	TWI_write_sensor(MPU6050_ADDRESS,0x1C,0x00);
-	UART_write_txt("MPU: Quinto init");
-	UART_write('\n');
 	TWI_write_sensor(MPU6050_ADDRESS,0x38,0x00);
-	UART_write_txt("MPU: Sexto init");
-	UART_write('\n');
 	TWI_write_sensor(MPU6050_ADDRESS,0x68,0x07);
 }
 

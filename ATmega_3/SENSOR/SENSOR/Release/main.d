@@ -16,7 +16,7 @@ main.d main.o: .././main.c \
  .././ADC/ADC.h .././LM335/LM335.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\interrupt.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stdbool.h \
- .././LM335/./../ADC/ADC.h .././UART/UART.h .././HK3022/HK3022.h \
+ .././LM335/./../ADC/ADC.h .././SPI/SPI.h .././HK3022/HK3022.h \
  .././HK3022/./../ADC/ADC.h .././TWI/TWI.h .././BMP280/BMP280.h \
  .././BMP280/../TWI/TWI.h .././BMP280/../UART/UART.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\stdlib.h \
@@ -62,7 +62,7 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\
 
 .././LM335/./../ADC/ADC.h:
 
-.././UART/UART.h:
+.././SPI/SPI.h:
 
 .././HK3022/HK3022.h:
 

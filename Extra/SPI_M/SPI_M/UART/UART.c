@@ -8,12 +8,14 @@
 
 void UART_init()
 {
-	DDRD |= (1<<DDD1);							//PD1	COMO SALIDA TXa
-	DDRD &= ~(1<<DDD0);						//PD0	COMO ENTRADA RX
+	DDRD |=  (1<<DDD1);	//- PD1 -> TX
+	DDRD &=~ (1<<DDD0);	//- PD0 -> RX
+	
 	UCSR0A = (0<<TXC0)|(0<<U2X0)|(0<<MPCM0);
 	UCSR0B = (1<<RXCIE0)|(0<<TXCIE0)|(0<<UDRIE0)|(1<<RXEN0)|(1<<TXEN0)|(0<<UCSZ02)|(0<<TXB80);
 	UCSR0C = (0<<UMSEL01)|(0<<UMSEL00)|(0<<UPM01)|(0<<UPM00)|(0<<USBS0)|(1<<UCSZ01)|(1<<UCSZ00)|(0<<UCPOL0);
-	UBRR0 = 103;								//NO DUPLICA VELOCIDAD 9600B A 160000
+	
+	UBRR0 = 103;		//- No duplica la velocidad 9600 a 160000
 }
 
 unsigned char UART_read(){

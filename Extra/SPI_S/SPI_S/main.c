@@ -14,6 +14,7 @@
 
 uint8_t datoRecibido = 0x00;
 uint8_t pinesB = 0x00;
+uint8_t SPI_Rx = 0x00;
 
 void SPI_init()		//- Inicializa SPI como Master
 {
@@ -41,11 +42,14 @@ void SPI_init()		//- Inicializa SPI como Master
 	
 	// Activar SPI
 	SPCR |= (1<<SPE);
+	
+	//Activar interrupcion SPI
+	SPCR |= (1<<SPIE);
 }
 
 void SPI_tx(uint8_t data)
 {
-	/* Cargar dato al registro */
+	/* Cargar dato	 al registro */
 	SPDR = data;
 	/* Esperar a que la transmisión se realice */
 	while(!(SPSR & (1<<SPIF)));
@@ -59,23 +63,45 @@ uint8_t SPI_rx()
 	return SPDR;
 }
 
+ISR(SPI_STC_vect)
+{
+	UART_write_txt("Interrumpe: ");
+	SPI_Rx = SPDR;
+	UART_write_data(SPI_Rx);
+	
+	if (SPI_Rx == 0x01)
+	{
+		SPI_tx(0xF4);
+		SPI_tx(0xA3);
+	}
+	else if(SPI_Rx == 2){
+		SPI_tx(0xF1);
+	}
+}
 
 int main(void)
 {
+	cli();
 	SPI_init();
 	UART_init();
-	
+	sei();
 	_delay_ms(10);
 	
     while (1) 
     {
-	    datoRecibido = SPI_rx();
-	    if (datoRecibido == 20)
-	    {
-		    SPI_tx(25);
-	    } else if(datoRecibido == 15){
-			SPI_tx(10);
-		}
+		//uint16_t uy = 0x0F0F;
+		//SPI_Rx = SPI_rx();
+	 //
+	    //if (SPI_Rx == 0x01)
+	    //{
+		    //SPI_tx(0x0F);
+			//_delay_us(10);
+		    //SPI_tx(0x0F);
+	    //} 
+		//else if(SPI_Rx == 2){
+			//SPI_tx(0xF1);
+			////SPI_tx(0x1F);
+		//}
 		
 		// si envias 0 por spi, se raya con el valor anterior.
 		/*
@@ -88,11 +114,11 @@ int main(void)
 			}
 		}
 		*/
-		UART_write_txt("DATO SPI recibe S: ");
-		UART_write_data(datoRecibido);
-		UART_write('\n');
+		//UART_write_txt("DATO SPI recibe S: ");
+		//UART_write_data(datoRecibido);
+		//UART_write('\n');
 		
-		_delay_ms(100);
+		//_delay_ms(100);
     }
 }
 
