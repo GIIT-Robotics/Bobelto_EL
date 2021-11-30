@@ -19,10 +19,7 @@ unsigned char UART_Rx = 0x00;
 
 ISR(USART_RX_vect)
 {
-	UART_write_txt("DATO RECIBIDO: ");
 	UART_Rx = UART_read();
-	UART_write(UART_Rx);
-	UART_write('\n');
 }
 
 void SPI_init()		//- Inicializa SPI como Master
@@ -102,6 +99,8 @@ uint8_t SPI_rx()
 
 int main(void)
 {
+	uint8_t temp[4] = {0,0,0,0};
+	
 	cli();
 	SPI_init();
 	UART_init();
@@ -114,7 +113,6 @@ int main(void)
 		float F = 0.0;
 		uint32_t Buff = 0;
 		int16_t I16 = 0;
-		uint8_t temp[4];
 		
 		switch(UART_Rx)
 		{
@@ -126,17 +124,31 @@ int main(void)
 
 				SPI_tx(0x01);
 				
+				temp[3] = temp[2];
+				temp[2] = temp[1];
+				temp[1] = temp[0];
 				temp[0] = SPI_rx();
-				temp[1] = SPI_rx();
 				
 				SPI_slaveOFF(1);
 				
-				//F = (int32_t)temp[0]<<8 | (int32_t)temp[1];
+				UART_write(temp[0]);
+				UART_write('\n');
+				UART_write(temp[1]);
+				UART_write('\n');
+				UART_write(temp[2]);
+				UART_write('\n');
+				UART_write(temp[3]);
+				UART_write('\n');
 				
-				UART_write_data(temp[0]);
-				UART_write('\n');
-				UART_write_data(temp[1]);
-				UART_write('\n');
+				if (temp[3] |= 0x00)
+				{
+					F = (int32_t)temp[3]<<24 | (int32_t)temp[2]<<16 | (int32_t)temp[0]<<8 | (int32_t)temp[1];
+					temp[0] = 0; temp[1] = 0; temp[2] = 0; temp[3] = 0;
+					
+					UART_write_txt("F es: ");
+					UART_write_data(F);
+					UART_write('\n');
+				}
 				
 				break;
 			
@@ -260,7 +272,7 @@ int main(void)
 				break;
 		}
 		
-		_delay_us(10);
+		_delay_us(100);
     }
 }
 

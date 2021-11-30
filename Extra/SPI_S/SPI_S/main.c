@@ -10,8 +10,6 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
-#include "UART/UART.h"
-
 uint8_t datoRecibido = 0x00;
 uint8_t pinesB = 0x00;
 uint8_t SPI_Rx = 0x00;
@@ -33,9 +31,9 @@ void SPI_init()		//- Inicializa SPI como Master
 	SPCR &=~ (1<<CPHA);                 	// Se trabaja en flancos de subida
 	
 	// Preescalador (8) => 1 MHz
-	SPCR |=  (1<<SPR0);
-	SPCR &=~ (1<<SPR1);
-	SPSR &=~ (1<<SPI2X);
+	//SPCR |=  (1<<SPR0);
+	//SPCR &=~ (1<<SPR1);
+	//SPSR &=~ (1<<SPI2X);
 	
 	// Configurado como esclavo
 	SPCR &=~ (1<<MSTR);
@@ -65,14 +63,14 @@ uint8_t SPI_rx()
 
 ISR(SPI_STC_vect)
 {
-	UART_write_txt("Interrumpe: ");
 	SPI_Rx = SPDR;
-	UART_write_data(SPI_Rx);
 	
 	if (SPI_Rx == 0x01)
 	{
-		SPI_tx(0xF4);
-		SPI_tx(0xA3);
+		SPI_tx(0x42);
+		SPI_tx(0x4F);
+		SPI_tx(0x42);
+		SPI_tx(0x4F);
 	}
 	else if(SPI_Rx == 2){
 		SPI_tx(0xF1);
@@ -83,7 +81,6 @@ int main(void)
 {
 	cli();
 	SPI_init();
-	UART_init();
 	sei();
 	_delay_ms(10);
 	
