@@ -111,16 +111,45 @@ int main(void)
     while (1) 
     {
 		float F = 0.0;
-		uint32_t Buff = 0;
-		int16_t I16 = 0;
+		//uint32_t Buff = 0;
+		//int16_t I16 = 0;
 		
 		switch(UART_Rx)
 		{
 			case '0':
-				UART_write_txt("ENVIO PRUEBA");
+				SPI_slaveON(1);
+
+				SPI_tx(0x01);
+				
+				_delay_us(1);
+				
+				temp[3] = temp[2];
+				temp[2] = temp[1];
+				temp[1] = temp[0];
+				temp[0] = SPI_rx();
+				
+				UART_write(temp[0]);
+				UART_write(temp[1]);
+				UART_write(temp[2]);
+				UART_write(temp[3]);
 				UART_write('\n');
 				
-				SPI_slaveON(1);
+				if (temp[3] |= 0x00)
+				{
+					F = (int32_t)temp[0]<<24 | (int32_t)temp[1]<<16 | (int32_t)temp[2]<<8 | (int32_t)temp[3];
+					temp[0] = 0; temp[1] = 0; temp[2] = 0; temp[3] = 0;
+					
+					UART_write_txt("F es: ");
+					UART_write_data(F);
+					UART_write('\n');
+					
+					//_delay_ms(500);
+				}
+				
+				break;
+			
+			case '1':
+				SPI_slaveON(1);	
 
 				SPI_tx(0x01);
 				
@@ -131,116 +160,96 @@ int main(void)
 				
 				SPI_slaveOFF(1);
 				
-				UART_write(temp[0]);
-				UART_write('\n');
-				UART_write(temp[1]);
-				UART_write('\n');
-				UART_write(temp[2]);
-				UART_write('\n');
-				UART_write(temp[3]);
-				UART_write('\n');
+				if (temp[3] |= 0x00)
+				{
+					F = (int32_t)temp[3]<<24 | (int32_t)temp[2]<<16 | (int32_t)temp[0]<<8 | (int32_t)temp[1];
+					temp[0] = 0; temp[1] = 0; temp[2] = 0; temp[3] = 0;
+					
+					UART_write_txt("Presion interna: ");
+					UART_write_data(F);
+					UART_write('\n');
+					
+					_delay_ms(500);
+				}
+					
+				break;
+			
+			
+			case '2':
+				SPI_slaveON(1);
+				
+				SPI_tx(0x02);
+				
+				temp[3] = temp[2];
+				temp[2] = temp[1];
+				temp[1] = temp[0];
+				temp[0] = SPI_rx();
+				
+				SPI_slaveOFF(1);
 				
 				if (temp[3] |= 0x00)
 				{
 					F = (int32_t)temp[3]<<24 | (int32_t)temp[2]<<16 | (int32_t)temp[0]<<8 | (int32_t)temp[1];
 					temp[0] = 0; temp[1] = 0; temp[2] = 0; temp[3] = 0;
 					
-					UART_write_txt("F es: ");
+					UART_write_txt("Presion externa: ");
 					UART_write_data(F);
 					UART_write('\n');
+					
+					_delay_ms(500);
 				}
 				
 				break;
 			
-			case '1':
-				UART_write_txt("Presion interna:");
-				UART_write('\n');
-				
-				SPI_slaveON(1);
-
-				SPI_tx(0x01);
-				
-				temp[0] = SPI_rx();
-				temp[1] = SPI_rx();
-				temp[2] = SPI_rx();
-				temp[3] = SPI_rx();
-				
-				F = (int32_t)temp[0]<<24 | (int32_t)temp[1]<<16 | (int32_t)temp[2]<<8 | (int32_t)temp[3];
-				
-				UART_write_data(F);
-				UART_write('\n');
-				
-				SPI_slaveOFF(1);
-				
-				break;
-			
-			
-			case '2':
-				UART_write_txt("Presión externa:");
-				UART_write('\n');
-				
-				SPI_slaveON(1);
-				
-				SPI_tx(0x02);
-				
-				//temp[0] = SPI_rx();
-				//temp[1] = SPI_rx();
-				//temp[2] = SPI_rx();
-				//temp[3] = SPI_rx();
-				//
-				//F = (int32_t)temp[0]<<24 | (int32_t)temp[1]<<16 | (int32_t)temp[2]<<8 | (int32_t)temp[3];
-				
-				temp[0] = SPI_rx();
-				
-				//UART_write_data(F);
-				UART_write_data(temp[0]);
-				UART_write('\n');
-				
-				SPI_slaveOFF(1);
-				
-				break;
-			
 			case '3':
-				UART_write_txt("Temperatura interna:");
-				UART_write('\n');
-				
 				SPI_slaveON(1);
 				
 				SPI_tx(0x03);
 				
+				temp[3] = temp[2];
+				temp[2] = temp[1];
+				temp[1] = temp[0];
 				temp[0] = SPI_rx();
-				temp[1] = SPI_rx();
-				temp[2] = SPI_rx();
-				temp[3] = SPI_rx();
-				
-				F = (int32_t)temp[0]<<24 | (int32_t)temp[1]<<16 | (int32_t)temp[2]<<8 | (int32_t)temp[3];
-				
-				UART_write_data(F);
-				UART_write('\n');
 				
 				SPI_slaveOFF(1);
+				
+				if (temp[3] |= 0x00)
+				{
+					F = (int32_t)temp[3]<<24 | (int32_t)temp[2]<<16 | (int32_t)temp[0]<<8 | (int32_t)temp[1];
+					temp[0] = 0; temp[1] = 0; temp[2] = 0; temp[3] = 0;
+					
+					UART_write_txt("Temperatura interna: ");
+					UART_write_data(F);
+					UART_write('\n');
+					
+					_delay_ms(500);
+				}
 				
 				break;
 			
 			case '4':
-				UART_write_txt("Temperatura externa:");
-				UART_write('\n');
-				
 				SPI_slaveON(1);
 				
 				SPI_tx(0x02);
 				
+				temp[3] = temp[2];
+				temp[2] = temp[1];
+				temp[1] = temp[0];
 				temp[0] = SPI_rx();
-				temp[1] = SPI_rx();
-				temp[2] = SPI_rx();
-				temp[3] = SPI_rx();
-				
-				F = (int32_t)temp[0]<<24 | (int32_t)temp[1]<<16 | (int32_t)temp[2]<<8 | (int32_t)temp[3];
-				
-				UART_write_data(F);
-				UART_write('\n');
 				
 				SPI_slaveOFF(1);
+				
+				if (temp[3] |= 0x00)
+				{
+					F = (int32_t)temp[3]<<24 | (int32_t)temp[2]<<16 | (int32_t)temp[0]<<8 | (int32_t)temp[1];
+					temp[0] = 0; temp[1] = 0; temp[2] = 0; temp[3] = 0;
+					
+					UART_write_txt("Temperatura externa: ");
+					UART_write_data(F);
+					UART_write('\n');
+					
+					_delay_ms(500);
+				}
 				
 				break;	
 			
@@ -272,7 +281,7 @@ int main(void)
 				break;
 		}
 		
-		_delay_us(100);
+		_delay_ms(500);
     }
 }
 

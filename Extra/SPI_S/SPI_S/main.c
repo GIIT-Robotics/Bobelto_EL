@@ -9,10 +9,13 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include <stdbool.h>
 
 uint8_t datoRecibido = 0x00;
 uint8_t pinesB = 0x00;
 uint8_t SPI_Rx = 0x00;
+uint8_t cont = 0x00;
+bool flag = false;
 
 void SPI_init()		//- Inicializa SPI como Master
 {
@@ -64,15 +67,17 @@ uint8_t SPI_rx()
 ISR(SPI_STC_vect)
 {
 	SPI_Rx = SPDR;
+	flag = true;
 	
 	if (SPI_Rx == 0x01)
 	{
-		SPI_tx(0x42);
+		SPI_tx(0x48);
 		SPI_tx(0x4F);
-		SPI_tx(0x42);
-		SPI_tx(0x4F);
+		SPI_tx(0x4C);
+		SPI_tx(0x41);
 	}
-	else if(SPI_Rx == 2){
+	else if(SPI_Rx == 2)
+	{
 		SPI_tx(0xF1);
 	}
 }
@@ -82,40 +87,46 @@ int main(void)
 	cli();
 	SPI_init();
 	sei();
+	
 	_delay_ms(10);
 	
     while (1) 
-    {
-		//uint16_t uy = 0x0F0F;
-		//SPI_Rx = SPI_rx();
-	 //
-	    //if (SPI_Rx == 0x01)
-	    //{
-		    //SPI_tx(0x0F);
-			//_delay_us(10);
-		    //SPI_tx(0x0F);
-	    //} 
-		//else if(SPI_Rx == 2){
-			//SPI_tx(0xF1);
-			////SPI_tx(0x1F);
-		//}
-		
-		// si envias 0 por spi, se raya con el valor anterior.
-		/*
-		if(PORTB & (1<<PORTB2))
+    {	
+		if (flag)
 		{
-			datoRecibido = SPI_rx();
-			if(datoRecibido == 0xBB)
+			if (SPI_Rx == 0x01)
 			{
-				SPI_tx(0xAA);
+				SPI_tx(0x48);
+				SPI_tx(0x4F);
+				SPI_tx(0x4C);
+				SPI_tx(0x41);
+				//if (cont == 0x00)
+				//{
+					//SPI_tx(0x48);
+					//cont++;
+				//}
+				//else if (cont == 0x01)
+				//{
+					//SPI_tx(0x4F);
+					//cont++;
+				//}
+				//else if (cont == 0x02)
+				//{
+					//SPI_tx(0x4C);
+					//cont++;
+				//}
+				//else if (cont == 0x03)
+				//{
+					//SPI_tx(0x41);
+					//cont = 0;
+				//}
 			}
+			else if(SPI_Rx == 2)
+			{
+				SPI_tx(0xF1);
+			}
+			flag = false;
 		}
-		*/
-		//UART_write_txt("DATO SPI recibe S: ");
-		//UART_write_data(datoRecibido);
-		//UART_write('\n');
-		
-		//_delay_ms(100);
     }
 }
 

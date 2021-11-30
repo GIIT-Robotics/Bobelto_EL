@@ -3,23 +3,23 @@ SPI_S.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000000  00800100  00800100  000001c4  2**0
+  0 .data         00000000  00800100  00800100  00000200  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         00000150  00000000  00000000  00000074  2**1
+  1 .text         0000018c  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .bss          00000001  00800100  00800100  000001c4  2**0
+  2 .bss          00000002  00800100  00800100  00000200  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  000001c4  2**0
+  3 .comment      00000030  00000000  00000000  00000200  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000001f4  2**2
+  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000230  2**2
                   CONTENTS, READONLY
-  5 .debug_info   000005f4  00000000  00000000  00000234  2**0
+  5 .debug_info   000005f4  00000000  00000000  00000270  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 000005a2  00000000  00000000  00000828  2**0
+  6 .debug_abbrev 000005a2  00000000  00000000  00000864  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   00000134  00000000  00000000  00000dca  2**0
+  7 .debug_line   00000134  00000000  00000000  00000e06  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_str    00000208  00000000  00000000  00000efe  2**0
+  8 .debug_str    00000208  00000000  00000000  00000f3a  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -70,11 +70,11 @@ Disassembly of section .text:
   7c:	1d 92       	st	X+, r1
 
 0000007e <.do_clear_bss_start>:
-  7e:	a1 30       	cpi	r26, 0x01	; 1
+  7e:	a2 30       	cpi	r26, 0x02	; 2
   80:	b2 07       	cpc	r27, r18
   82:	e1 f7       	brne	.-8      	; 0x7c <.do_clear_bss_loop>
-  84:	0e 94 9b 00 	call	0x136	; 0x136 <main>
-  88:	0c 94 a6 00 	jmp	0x14c	; 0x14c <_exit>
+  84:	0e 94 9e 00 	call	0x13c	; 0x13c <main>
+  88:	0c 94 c4 00 	jmp	0x188	; 0x188 <_exit>
 
 0000008c <__bad_interrupt>:
   8c:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -130,53 +130,75 @@ Disassembly of section .text:
   e6:	ef 93       	push	r30
   e8:	ff 93       	push	r31
   ea:	8e b5       	in	r24, 0x2e	; 46
-  ec:	80 93 00 01 	sts	0x0100, r24	; 0x800100 <__DATA_REGION_ORIGIN__>
-  f0:	81 30       	cpi	r24, 0x01	; 1
-  f2:	59 f4       	brne	.+22     	; 0x10a <__vector_17+0x42>
-  f4:	82 e4       	ldi	r24, 0x42	; 66
-  f6:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_tx>
-  fa:	8f e4       	ldi	r24, 0x4F	; 79
+  ec:	80 93 01 01 	sts	0x0101, r24	; 0x800101 <SPI_Rx>
+  f0:	91 e0       	ldi	r25, 0x01	; 1
+  f2:	90 93 00 01 	sts	0x0100, r25	; 0x800100 <__DATA_REGION_ORIGIN__>
+  f6:	81 30       	cpi	r24, 0x01	; 1
+  f8:	59 f4       	brne	.+22     	; 0x110 <__vector_17+0x48>
+  fa:	88 e4       	ldi	r24, 0x48	; 72
   fc:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_tx>
- 100:	82 e4       	ldi	r24, 0x42	; 66
+ 100:	8f e4       	ldi	r24, 0x4F	; 79
  102:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_tx>
- 106:	8f e4       	ldi	r24, 0x4F	; 79
- 108:	03 c0       	rjmp	.+6      	; 0x110 <__vector_17+0x48>
- 10a:	82 30       	cpi	r24, 0x02	; 2
- 10c:	19 f4       	brne	.+6      	; 0x114 <__vector_17+0x4c>
- 10e:	81 ef       	ldi	r24, 0xF1	; 241
- 110:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_tx>
- 114:	ff 91       	pop	r31
- 116:	ef 91       	pop	r30
- 118:	bf 91       	pop	r27
- 11a:	af 91       	pop	r26
- 11c:	9f 91       	pop	r25
- 11e:	8f 91       	pop	r24
- 120:	7f 91       	pop	r23
- 122:	6f 91       	pop	r22
- 124:	5f 91       	pop	r21
- 126:	4f 91       	pop	r20
- 128:	3f 91       	pop	r19
- 12a:	2f 91       	pop	r18
- 12c:	0f 90       	pop	r0
- 12e:	0f be       	out	0x3f, r0	; 63
- 130:	0f 90       	pop	r0
- 132:	1f 90       	pop	r1
- 134:	18 95       	reti
+ 106:	8c e4       	ldi	r24, 0x4C	; 76
+ 108:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_tx>
+ 10c:	81 e4       	ldi	r24, 0x41	; 65
+ 10e:	03 c0       	rjmp	.+6      	; 0x116 <__vector_17+0x4e>
+ 110:	82 30       	cpi	r24, 0x02	; 2
+ 112:	19 f4       	brne	.+6      	; 0x11a <__vector_17+0x52>
+ 114:	81 ef       	ldi	r24, 0xF1	; 241
+ 116:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_tx>
+ 11a:	ff 91       	pop	r31
+ 11c:	ef 91       	pop	r30
+ 11e:	bf 91       	pop	r27
+ 120:	af 91       	pop	r26
+ 122:	9f 91       	pop	r25
+ 124:	8f 91       	pop	r24
+ 126:	7f 91       	pop	r23
+ 128:	6f 91       	pop	r22
+ 12a:	5f 91       	pop	r21
+ 12c:	4f 91       	pop	r20
+ 12e:	3f 91       	pop	r19
+ 130:	2f 91       	pop	r18
+ 132:	0f 90       	pop	r0
+ 134:	0f be       	out	0x3f, r0	; 63
+ 136:	0f 90       	pop	r0
+ 138:	1f 90       	pop	r1
+ 13a:	18 95       	reti
 
-00000136 <main>:
- 136:	f8 94       	cli
- 138:	0e 94 48 00 	call	0x90	; 0x90 <SPI_init>
- 13c:	78 94       	sei
- 13e:	8f e3       	ldi	r24, 0x3F	; 63
- 140:	9c e9       	ldi	r25, 0x9C	; 156
- 142:	01 97       	sbiw	r24, 0x01	; 1
- 144:	f1 f7       	brne	.-4      	; 0x142 <main+0xc>
- 146:	00 c0       	rjmp	.+0      	; 0x148 <main+0x12>
- 148:	00 00       	nop
- 14a:	ff cf       	rjmp	.-2      	; 0x14a <main+0x14>
+0000013c <main>:
+ 13c:	f8 94       	cli
+ 13e:	0e 94 48 00 	call	0x90	; 0x90 <SPI_init>
+ 142:	78 94       	sei
+ 144:	8f e3       	ldi	r24, 0x3F	; 63
+ 146:	9c e9       	ldi	r25, 0x9C	; 156
+ 148:	01 97       	sbiw	r24, 0x01	; 1
+ 14a:	f1 f7       	brne	.-4      	; 0x148 <main+0xc>
+ 14c:	00 c0       	rjmp	.+0      	; 0x14e <main+0x12>
+ 14e:	00 00       	nop
+ 150:	80 91 00 01 	lds	r24, 0x0100	; 0x800100 <__DATA_REGION_ORIGIN__>
+ 154:	81 11       	cpse	r24, r1
+ 156:	01 c0       	rjmp	.+2      	; 0x15a <main+0x1e>
+ 158:	ff cf       	rjmp	.-2      	; 0x158 <main+0x1c>
+ 15a:	80 91 01 01 	lds	r24, 0x0101	; 0x800101 <SPI_Rx>
+ 15e:	81 30       	cpi	r24, 0x01	; 1
+ 160:	59 f4       	brne	.+22     	; 0x178 <main+0x3c>
+ 162:	88 e4       	ldi	r24, 0x48	; 72
+ 164:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_tx>
+ 168:	8f e4       	ldi	r24, 0x4F	; 79
+ 16a:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_tx>
+ 16e:	8c e4       	ldi	r24, 0x4C	; 76
+ 170:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_tx>
+ 174:	81 e4       	ldi	r24, 0x41	; 65
+ 176:	03 c0       	rjmp	.+6      	; 0x17e <main+0x42>
+ 178:	82 30       	cpi	r24, 0x02	; 2
+ 17a:	19 f4       	brne	.+6      	; 0x182 <main+0x46>
+ 17c:	81 ef       	ldi	r24, 0xF1	; 241
+ 17e:	0e 94 5f 00 	call	0xbe	; 0xbe <SPI_tx>
+ 182:	10 92 00 01 	sts	0x0100, r1	; 0x800100 <__DATA_REGION_ORIGIN__>
+ 186:	e4 cf       	rjmp	.-56     	; 0x150 <main+0x14>
 
-0000014c <_exit>:
- 14c:	f8 94       	cli
+00000188 <_exit>:
+ 188:	f8 94       	cli
 
-0000014e <__stop_program>:
- 14e:	ff cf       	rjmp	.-2      	; 0x14e <__stop_program>
+0000018a <__stop_program>:
+ 18a:	ff cf       	rjmp	.-2      	; 0x18a <__stop_program>
