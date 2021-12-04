@@ -19,6 +19,6 @@
 	
 	#include "./../ADC/ADC.h"
 	
-	float LM335_Data();
+	int16_t LM335_Data();
 
 #endif /* LM335_H_ */

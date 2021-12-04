@@ -14,8 +14,5 @@
 	
 	void SPI_init();
 	void SPI_tx(uint8_t data);
-	void SPI_tx_16bit(uint16_t data);
-	void SPI_tx_32bit(uint32_t data);
-	
 
 #endif /* SPI_H_ */

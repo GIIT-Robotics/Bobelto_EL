@@ -1,87 +1,86 @@
 #include "SPI.h"
 
-/*
- *
- *	Inicializacion del SPI como Maestro
- *
- */
+/************************************************************************/
+/*  Inicializacion del SPI como Maestro                                 */
+/************************************************************************/
 void SPI_init()
 {
-	DDRB  = (1<<DDB1)|(1<<DDB2)|(1<<DDB3)|(0<<DDB4)|(1<<DDB5);		//- PB1 es CS1/SS1 | PB2 es CS2/SS2 | PB3 es MOSI | PB4 es MISO | PB5 es SCK
-	PORTB = (1<<PORTB1)|(1<<PORTB2);								//- En alta para que los esclavos no estén seleccionados
-	SPCR  = (1<<MSTR)|(1<<SPR0);									//- Configurado como maestro | F_SPI = F_CPU/16
+	DDRB |=  (1 << DDB2) | (1 << DDB3) | (1 << DDB5);		//- PB2 es SS, PB3 es MOSI y PB5 es SCK
+	DDRB &=~ (1 << DDB4);									//- PB4 es MISO
 	
-	SPCR  = 1<<SPE;													//- Enciende SPI
+	PORTB |= (1 << PORTB2);									//- Mantenemos el SS en alta
+
+	SPCR |=  (1 << MSTR);									//- Configurado como maestro
+	SPCR &=~ (1 << DORD);									//- Orden de los datos -> Primero el MSB
+	SPCR &=~ (1 << CPOL);									//- Clock inactivo en baja
+	SPCR &=~ (1 << CPHA);									//- Se trabaja en flancos de subida
+
+	// Preescalador (16) => 1 MHz
+	SPCR |=  (1 << SPR0);
+	SPCR &=~ (1 << SPR1);
+	SPSR &=~ (1 << SPI2X);
+
+	SPCR |=  (1 << SPE);									//- Activar SPI
 }
 
-/*
- *
- *	Encendido de esclavo
- *
- */
+/************************************************************************/
+/*  Encendido de esclavo                                                */
+/************************************************************************/
 void SPI_slaveON(uint8_t slave)
 {
 	switch (slave)
 	{
 		case 1:
-		PORTB &=~ (1<<PORTB1);										//- Enciende comunicacion con esclavo 1
+		PORTB &=~ (1<<PORTB2);								//- Enciende comunicacion con esclavo 1
 		break;
 		
 		case 2:
-		PORTB &=~ (1<<PORTB2);										//- Enciende comunicacion con esclavo 2
+		PORTB &=~ (1<<PORTB2);								//- Enciende comunicacion con esclavo 2
 		break;
 	}
 }
 
-/*
- *
- *	Apagado de esclavo
- *
- */
+/************************************************************************/
+/* Apagado de esclavo                                                   */
+/************************************************************************/
 void SPI_slaveOFF(uint8_t slave)
 {
 	switch (slave)
 	{
 		case 1:
-		PORTB &=~ (1<<PORTB1);										//- Apaga comunicacion con esclavo 1
+		PORTB &=~ (1<<PORTB2);								//- Apaga comunicacion con esclavo 1
 		break;
 		
 		case 2:
-		PORTB &=~ (1<<PORTB2);										//- Apaga comunicacion con esclavo 2
+		PORTB &=~ (1<<PORTB2);								//- Apaga comunicacion con esclavo 2
 		break;
 	}
 }
 
-/*
- *
- *	SPI Transmission
- *
- */
+/************************************************************************/
+/* SPI Transmission                                                     */
+/************************************************************************/
 void SPI_tx(uint8_t data)
 {
-	SPDR = data;													//- Sube el Byte al registro del bus
-	while(!(SPSR & (1<<SPIF)));										//- Espera a que el esclavo reciba el dato
+	SPDR = data;											//- Sube el Byte al registro del bus
+	while(!(SPSR & (1<<SPIF)));								//- Espera a que el esclavo reciba el dato						
 }
 
-/*
- *
- *	SPI Reception
- *
- */
+/************************************************************************/
+/* SPI Reception                                                        */
+/************************************************************************/
 uint8_t SPI_rx()
 {
-	while(!(SPSR & (1<<SPIF)));										//- Espera a que haya algun Byte en el bus
-	return SPDR;													//- Retorna el Byte recivido
+	while(!(SPSR & (1<<SPIF)));								//- Espera a que haya algun Byte en el bus
+	return SPDR;											//- Retorna el Byte recivido
 }
 
-/*
- *
- *	SPI Transciever
- *
- */
+/************************************************************************/
+/* SPI Transciever                                                      */
+/************************************************************************/
 uint8_t SPI_trx(uint8_t data)
 {
-	SPDR = data;													//- Sube el Byte al registro del bus
-	while(!(SPSR & (1<<SPIF)));										//- Espera a que haya algun Byte en el bus
-	return SPDR;													//- Retorna el Byte recivido
+	SPDR = data;											//- Sube el Byte al registro del bus
+	while(!(SPSR & (1<<SPIF)));								//- Espera a que haya algun Byte en el bus
+	return SPDR;											//- Retorna el Byte recivido
 }

@@ -6,10 +6,11 @@
  */ 
 #include "HK3022.h"
 
-float HK3022_Data()
+uint16_t HK3022_Data()
 {
-	float adcV = ADC_GetData(0)*5.0f/1024.0f;
-	float pres = (adcV*100)/4.5;
-	
-	return pres;
+	//float adcV = ADC_GetData(0)*5.0f/1024.0f;	//- Lo pasa a voltios
+	//float pres = (adcV*100)/4.5;				//- lo pasa a presión hPa
+	//
+	//return pres;
+	return (uint16_t)ADC_GetData(0);
 }

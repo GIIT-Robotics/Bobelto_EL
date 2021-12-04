@@ -19,7 +19,7 @@
 
 	#include "./../ADC/ADC.h"
 
-	float HK3022_Data();
+	uint16_t HK3022_Data();
 
 
 #endif /* HK3022_H_ */

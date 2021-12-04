@@ -6,10 +6,11 @@
  */ 
 #include "LM335.h"
 
-float LM335_Data()
+int16_t LM335_Data()
 {	
-	float t_K	= ADC_GetData(1) * 0.004882812 * 100;
-	float t_C	= t_K - 273.15;
-	
-	return t_C;
+	//float t_K	= ADC_GetData(1) * 0.004882812 * 100;	//- Transforma la medición del ADC en grados Kelvin
+	//float t_C	= t_K - 273.15;							//- Transforma Kelvin a Celsius
+	//
+	//return t_C;
+	return (int16_t)ADC_GetData(1);
 }

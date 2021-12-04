@@ -45,31 +45,5 @@ void SPI_tx(uint8_t data)
 	while(!(SPSR & (1<<SPIF)));
 }
 
-void SPI_tx_16bit(uint16_t data)
-{
-	uint8_t bytes[sizeof(data)] = 
-	{
-		((uint16_t)data >> 0) & 0xFF,
-		((uint16_t)data >> 8) & 0xFF 
-	};
-	
-	SPI_tx(bytes[0]);
-	SPI_tx(bytes[1]);
-}
 
-void SPI_tx_32bit(uint32_t data)
-{
-	uint8_t bytes[sizeof(data)] =
-	{
-		((uint32_t)data >>  0) & 0xFF,
-		((uint32_t)data >>  8) & 0xFF,
-		((uint32_t)data >> 16) & 0xFF,
-		((uint32_t)data >> 24) & 0xFF
-	};
-	
-	SPI_tx(bytes[0]);
-	SPI_tx(bytes[1]);
-	SPI_tx(bytes[2]);
-	SPI_tx(bytes[3]);
-}
 
