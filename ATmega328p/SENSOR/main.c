@@ -32,6 +32,9 @@ int16_t a_z = 0;		//- Acelerometro en Z
 int16_t g_x = 0;		//- Giroscopio en X
 int16_t g_y = 0;		//- Giroscopio en Y
 int16_t g_z = 0;		//- Giroscopio en Z
+int16_t m_x = 0;        //- Magnetometro en X
+int16_t m_y = 0;        //- Magnetometro en Y
+int16_t m_z = 0;        //- Magnetometro en Z
 uint16_t dist = 0;		//- Distancia Ultrasonido
 
 uint8_t bit_crop(uint16_t data, uint8_t byte)
@@ -134,11 +137,27 @@ ISR(SPI_STC_vect)
 			break;
 			
 		case 0xB1:
-			SPDR = bit_crop(dist,1);
+			SPDR = bit_crop(m_x,1);
 			break;
 			
 		case 0xB2:
-			SPDR = bit_crop(dist,0);
+			SPDR = bit_crop(m_x,0);
+			break;
+		
+		case 0xC1:
+			SPDR = bit_crop(m_y,1);
+			break;
+			
+		case 0xC2:
+			SPDR = bit_crop(m_y,0);
+			break;
+		
+		case 0xD1:
+			SPDR = bit_crop(m_z,1);
+			break;
+			
+		case 0xD2:
+			SPDR = bit_crop(m_z,0);
 			break;
 		
 		default:
@@ -190,6 +209,9 @@ int main(void)
 	    g_x   = (int16_t)MPU6050_read_gyro(1);		//- Giroscopio en X
 	    g_y   = (int16_t)MPU6050_read_gyro(2);		//- Giroscopio en Y
 	    g_z   = (int16_t)MPU6050_read_gyro(3);		//- Giroscopio en Z
+		m_x   = (int16_t)MPU6050_read_magn(1);      //- Magnetometro en X
+		m_y   = (int16_t)MPU6050_read_magn(2);      //- Magnetometro en Y
+		m_z   = (int16_t)MPU6050_read_magn(3);      //- Magnetometro en Z
 	    USON_Data();	//- La data se guarda en dist
 		
 		_delay_us(10);

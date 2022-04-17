@@ -79,3 +79,36 @@ int16_t MPU6050_read_gyro(int axis)
 	
 	return gyr;
 }
+
+int16_t MPU6050_read_magn(int axis)
+{
+	uint8_t tmp[2]; // tmp[0] HIGH y tmp[1] LOW
+	int16_t magnetometer_reading;
+	
+	if (axis == 1)
+	{
+		//- Eje X
+		tmp[0] = TWI_read_sensor(MPU6050_ADDRESS,0x04);
+		tmp[1] = TWI_read_sensor(MPU6050_ADDRESS,0x03);
+	}
+	else if (axis == 2)
+	{
+		//- Eje Y
+		tmp[0] = TWI_read_sensor(MPU6050_ADDRESS,0x06);
+		tmp[1] = TWI_read_sensor(MPU6050_ADDRESS,0x05);
+	}
+	else if (axis == 3)
+	{
+		//- Eje Z
+		tmp[0] = TWI_read_sensor(MPU6050_ADDRESS,0x08);
+		tmp[1] = TWI_read_sensor(MPU6050_ADDRESS,0x07);
+	}
+	else
+	{
+		tmp[0] = 0xFF;
+		tmp[1] = 0xFF;
+	}
+	
+	magnetometer_reading = (int16_t)(tmp[0] << 8) | (tmp[1]);
+	return magnetometer_reading;
+}

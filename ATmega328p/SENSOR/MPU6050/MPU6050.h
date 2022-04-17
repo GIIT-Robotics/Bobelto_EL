@@ -16,6 +16,7 @@
 	void MPU6050_init();
 	int16_t MPU6050_read_acce(int axis);
 	int16_t MPU6050_read_gyro();
+	int16_t MPU6050_read_magn(int axis);
 	
 
 #endif /* MPU6050_H_ */
