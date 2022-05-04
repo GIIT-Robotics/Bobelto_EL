@@ -8,21 +8,15 @@ void SPI_init()
 	DDRB &=~ (1 << DDB2) | ( 1 << DDB3) | (1 << DDB5);		//- PB3 es MOSI y PB5 es SCK
 	DDRB |=  (1 << DDB4);                 					//- PB4 es MISO
 	
-	//PORTB &=~ (1 << PORTB4);								//- 
+	SPCR &=~ (1<<DORD);										// Orden de bits
+
+	SPCR &=~ (1<<CPOL);                 					// Clock inactivo en baja
+	SPCR &=~ (1<<CPHA);                 					// Se trabaja en flancos de subida
 	
-	// Orden de bits
-	SPCR &=~ (1<<DORD);
+	SPCR &=~ (1<<MSTR);										// Configurado como esclavo
+	SPCR |=  (1<<SPE);										//- Enciende SPI
 	
-	// Polaridad y fase
-	SPCR &=~ (1<<CPOL);                 	// Clock inactivo en baja
-	SPCR &=~ (1<<CPHA);                 	// Se trabaja en flancos de subida
-	
-	// Configurado como esclavo
-	SPCR &=~ (1<<MSTR);
-	SPCR |=  (1<<SPE);											//- Enciende SPI
-	
-	// Activa interrupcion
-	SPCR |= (1<<SPIE);
+	SPCR |= (1<<SPIE);										// Activa interrupcion
 }
 
 /*
